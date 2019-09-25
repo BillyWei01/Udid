@@ -5,7 +5,7 @@
 
 ## 使用方法
 
-客户端和服务端分别在Android Studio和Intellij IDEA上开发，用对应的IDE上运行即可。
+客户端和服务端分别在Android Studio和Intellij IDEA上开发，在对应的IDE上运行即可。
 
 服务端代码，服务监听用的JDK自带的HttpServer，数据库用的sqlite-jdbc, 所以服务端可以零配置运行。
 
@@ -17,7 +17,7 @@ object URLConfig{
 }
 ```
 
-然后服务端如果是在PC上运行，客户和服务端需要同一网段。
+服务端如果是在PC上运行，客户和服务端需要同一网段。
 
 ## 相关链接
 https://www.jianshu.com/p/df3f549ddd35
