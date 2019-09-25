@@ -19,6 +19,9 @@ object URLConfig{
 
 然后服务端如果是在PC上运行，客户和服务端需要同一网段。
 
+## 相关链接
+https://www.jianshu.com/p/df3f549ddd35
+
 
 ## License
 See the [LICENSE](LICENSE.md) file for license rights and limitations.
