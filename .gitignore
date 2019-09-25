@@ -1,0 +1,16 @@
+*.iml
+/UdidClient/.gradle
+/UdidClient/local.properties
+/UdidClient/.idea/caches
+/UdidClient/.idea/libraries
+/UdidClient/.idea/modules.xml
+/UdidClient/.idea/workspace.xml
+/UdidClient/.idea/navEditor.xml
+/UdidClient/.idea/assetWizardSettings.xml
+/UdidClient.DS_Store
+/UdidClient/build
+/UdidClient/captures
+/UdidClient/.externalNativeBuild
+/UdidClient/.idea
+/UdidServer/.idea
+/UdidServer/out
