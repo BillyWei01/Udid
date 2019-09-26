@@ -17,8 +17,6 @@ object URLConfig{
 }
 ```
 
-服务端如果是在PC上运行，客户和服务端需要同一网段。
-
 ## 相关链接
 https://www.jianshu.com/p/df3f549ddd35
 
