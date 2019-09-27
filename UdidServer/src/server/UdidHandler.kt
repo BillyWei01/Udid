@@ -15,6 +15,7 @@ import server.vo.DeviceIdInfo
 
 import java.io.IOException
 import java.nio.ByteBuffer
+import java.util.*
 
 class UdidHandler : HttpHandler {
     companion object {
@@ -180,20 +181,33 @@ class UdidHandler : HttpHandler {
     }
 
     private fun matchDeviceId(deviceIdList: List<DeviceId>, r: DeviceId): DeviceId? {
-        deviceIdList.forEach { did->
+        // 对于候选的deviceId,放到优先队列（最大堆）
+        // 遍历列表结束后，取优先级最高的deviceId
+        val queue = PriorityQueue<DeviceId>(Comparator { o1, o2 -> o2.priority.compareTo(o1.priority) })
+        deviceIdList.forEach { did ->
             val s = idMatch(did.serial_no, r.serial_no)
             val a = idMatch(did.android_id, r.android_id)
             val m = idMatch(did.mac, r.mac)
-            if ((s && (a || m)) || (a && m)) {
+            // 遇上三个都匹配的，直接返回
+            if (s && m && a) {
                 return did
+            }
+            if ((s && (a || m)) || (a && m)) {
+                did.priority = 3
+                queue.offer(did)
             }
             val p = idMatch(did.physics_info, r.physics_info)
                     || idMatch(did.dark_physics_info, r.dark_physics_info)
-            if (p && (a || m)) {
-                return did
+            if (p && a) {
+                did.priority = 2
+                queue.offer(did)
+            }
+            if (p && m) {
+                did.priority = 1
+                queue.offer(did)
             }
         }
-        return null
+        return queue.peek()
     }
 
     private fun responseUpdate(exchange: HttpExchange) {
@@ -220,9 +234,12 @@ class UdidHandler : HttpHandler {
     private fun response(exchange: HttpExchange, statusCode: Int, json: JSONObject) {
         TaskCenter.io.execute {
             try {
+                val responseContent = json.toString()
+                println(DateUtil.now() +" response: $responseContent")
+
                 exchange.sendResponseHeaders(statusCode, 0)
                 val responseBody = exchange.responseBody
-                responseBody.write(json.toString().toByteArray())
+                responseBody.write(responseContent.toByteArray())
                 responseBody.close()
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -69,27 +69,4 @@ public class MHash {
 
         return h;
     }
-
-    public static long hash64(long value) {
-        final long m = 0xc6a4a7935bd1e995L;
-        final long seed = 0xe17a1465L;
-        final int r = 47;
-        int len = 8;
-
-        long h = seed ^ (len * m);
-        long k = value;
-
-        k *= m;
-        k ^= k >>> r;
-        k *= m;
-        h ^= k;
-        h *= m;
-
-        h ^= h >>> r;
-        h *= m;
-        h ^= h >>> r;
-
-        return h;
-    }
-
 }

@@ -10,6 +10,22 @@ import java.sql.ResultSet
 object UdidDao {
     private val dbHelper = UdidDbHelper("./data/udid.db")
 
+    fun getMaxSeq(lower : Long, upper : Long):Long{
+        val sql = "SELECT seq FROM t_device_id WHERE seq>$lower and seq<=$upper ORDER BY seq DESC LIMIT 1"
+        val statement = dbHelper.connection.createStatement()
+        var rs: ResultSet? = null
+        try {
+            rs = statement.executeQuery(sql)
+            if (rs.next()) {
+                return rs.getLong(1)
+            }
+        } finally {
+            DbHelper.closeQuietly(rs)
+            DbHelper.closeQuietly(statement)
+        }
+        return 0L
+    }
+
     fun queryDeviceId(udid: Long): DeviceId? {
         val sql = "SELECT * FROM t_device_id WHERE udid=$udid"
         val statement = dbHelper.connection.createStatement()
@@ -66,7 +82,7 @@ object UdidDao {
         return list
     }
 
-    fun parseDeviceId(rs: ResultSet): DeviceId {
+    private fun parseDeviceId(rs: ResultSet): DeviceId {
         val deviceId = DeviceId()
         deviceId.seq = rs.getLong("seq")
         deviceId.udid = rs.getLong("udid")
