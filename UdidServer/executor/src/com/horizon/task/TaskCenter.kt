@@ -32,9 +32,8 @@ object TaskCenter {
     val io = PipeExecutor(64)
     val computation = PipeExecutor(Math.min(Math.max(2, cpuCount), 8), 1024)
 
-    // 带去重策略的 Executor
-    val laneIO = LaneExecutor(io, true)
-    val laneCP = LaneExecutor(computation, true)
+//    val laneIO = LaneExecutor(io, true)
+//    val laneCP = LaneExecutor(computation, true)
 
     // 相同的tag的任务会被串行执行，相当于串行的Executor(不过是tag相同的任务各自串行）
     // 可以用于一些日志类的任务

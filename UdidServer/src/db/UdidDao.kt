@@ -48,7 +48,7 @@ object UdidDao {
             return list
         }
         var hasCondition = false
-        val builder = StringBuilder(1024)
+        val builder = StringBuilder(128)
         builder.append("SELECT * FROM t_device_id WHERE ")
         if (mac != 0L) {
             builder.append("mac=").append(mac).append(' ')
