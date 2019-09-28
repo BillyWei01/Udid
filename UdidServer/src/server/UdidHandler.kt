@@ -181,8 +181,9 @@ class UdidHandler : HttpHandler {
     }
 
     private fun matchDeviceId(deviceIdList: List<DeviceId>, r: DeviceId): DeviceId? {
-        // 对于候选的deviceId,放到优先队列（最大堆）
-        // 遍历列表结束后，取优先级最高的deviceId
+        if (deviceIdList.isEmpty()) {
+            return null
+        }
         val queue = PriorityQueue<DeviceId>(Comparator { o1, o2 -> o2.priority.compareTo(o1.priority) })
         deviceIdList.forEach { did ->
             val s = idMatch(did.serial_no, r.serial_no)
@@ -191,7 +192,7 @@ class UdidHandler : HttpHandler {
 
             if (s && m && a) {
                 return did
-            }else if ((s && (a || m)) || (a && m)) {
+            } else if ((s && (a || m)) || (a && m)) {
                 did.priority = 3
                 queue.offer(did)
                 return@forEach
@@ -202,7 +203,7 @@ class UdidHandler : HttpHandler {
             if (p && a) {
                 did.priority = 2
                 queue.offer(did)
-            }else if (p && m) {
+            } else if (p && m) {
                 did.priority = 1
                 queue.offer(did)
             }
@@ -235,7 +236,7 @@ class UdidHandler : HttpHandler {
         TaskCenter.io.execute {
             try {
                 val responseContent = json.toString()
-                println(DateUtil.now() +" response: $responseContent")
+                println(DateUtil.now() + " response: $responseContent")
 
                 exchange.sendResponseHeaders(statusCode, 0)
                 val responseBody = exchange.responseBody
