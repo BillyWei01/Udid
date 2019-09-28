@@ -37,12 +37,11 @@ object DeviceManager {
         if (udid == 0L) {
             queryUdid()
         } else {
- /*           val now = System.currentTimeMillis()
+            val now = System.currentTimeMillis()
             if(now - AppKv.lastSyncUdidTime > UPDATE_INTERVAL) {
                 AppKv.lastSyncUdidTime = now
                 uploadDeviceInfo(udid)
-            }*/
-            uploadDeviceInfo(udid)
+            }
         }
     }
 
