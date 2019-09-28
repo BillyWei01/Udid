@@ -188,18 +188,20 @@ class UdidHandler : HttpHandler {
             val s = idMatch(did.serial_no, r.serial_no)
             val a = idMatch(did.android_id, r.android_id)
             val m = idMatch(did.mac, r.mac)
-            val p = idMatch(did.physics_info, r.physics_info)
-                    || idMatch(did.dark_physics_info, r.dark_physics_info)
+
             if (s && m && a) {
-                // 如果三个设备ID都匹配，直接返回
                 return did
             }else if ((s && (a || m)) || (a && m)) {
                 did.priority = 3
                 queue.offer(did)
-            }else if (p && a) {
+                return@forEach
+            }
+
+            val p = idMatch(did.physics_info, r.physics_info)
+                    || idMatch(did.dark_physics_info, r.dark_physics_info)
+            if (p && a) {
                 did.priority = 2
                 queue.offer(did)
-                return@forEach
             }else if (p && m) {
                 did.priority = 1
                 queue.offer(did)
