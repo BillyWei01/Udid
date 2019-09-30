@@ -15,7 +15,6 @@ import server.vo.DeviceIdInfo
 
 import java.io.IOException
 import java.nio.ByteBuffer
-import java.util.*
 
 class UdidHandler : HttpHandler {
     companion object {
@@ -184,31 +183,37 @@ class UdidHandler : HttpHandler {
         if (deviceIdList.isEmpty()) {
             return null
         }
-        val queue = PriorityQueue<DeviceId>(Comparator { o1, o2 -> o2.priority.compareTo(o1.priority) })
+        var maxPriorityDid : DeviceId? = null
+        var priority = 0
         deviceIdList.forEach { did ->
             val s = idMatch(did.serial_no, r.serial_no)
             val a = idMatch(did.android_id, r.android_id)
             val m = idMatch(did.mac, r.mac)
-
             if (s && m && a) {
                 return did
-            } else if ((s && (a || m)) || (a && m)) {
-                did.priority = 3
-                queue.offer(did)
-                return@forEach
             }
 
+            if(priority == 3) return@forEach
+            if ((s && (a || m)) || (a && m)) {
+                priority = 3
+                maxPriorityDid = did
+            }
+
+            if(priority >= 2) return@forEach
             val p = idMatch(did.physics_info, r.physics_info)
                     || idMatch(did.dark_physics_info, r.dark_physics_info)
             if (p && a) {
-                did.priority = 2
-                queue.offer(did)
-            } else if (p && m) {
-                did.priority = 1
-                queue.offer(did)
+                priority = 2
+                maxPriorityDid = did
+            }
+
+            if(priority >= 1) return@forEach
+            if (p && m) {
+                priority = 1
+                maxPriorityDid = did
             }
         }
-        return queue.peek()
+        return maxPriorityDid
     }
 
     private fun responseUpdate(exchange: HttpExchange) {

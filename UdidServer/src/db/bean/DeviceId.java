@@ -10,6 +10,4 @@ public class DeviceId {
     public long dark_physics_info;
     public long create_time;
     public long update_time;
-
-    public long priority;
 }
