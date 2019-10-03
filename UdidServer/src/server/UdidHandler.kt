@@ -152,7 +152,7 @@ class UdidHandler : HttpHandler {
         // udid其实也可以直接使用randomUDID，但是randomUDID的检索性能比long要慢
         // 具体情况，看怎么使用方便，如果其他系统要求udid是String类型，可以通过Base64或者Long.toHexString转换
         r.seq = IdGenerator.getUdidSeq()
-        r.udid = ConfuseUtil.encode(r.seq)
+        r.udid = LongEncoder.encode(r.seq)
         r.create_time = System.currentTimeMillis()
         r.update_time = r.create_time
         UdidDao.insertOrReplaceDeviceId(r)
