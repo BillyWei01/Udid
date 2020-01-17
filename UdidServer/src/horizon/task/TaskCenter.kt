@@ -1,7 +1,7 @@
-package com.horizon.task
+package horizon.task
 
-import com.horizon.task.executor.LaneExecutor
-import com.horizon.task.executor.PipeExecutor
+import horizon.task.executor.LaneExecutor
+import horizon.task.executor.PipeExecutor
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor

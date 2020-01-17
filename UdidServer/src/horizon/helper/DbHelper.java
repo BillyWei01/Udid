@@ -1,4 +1,4 @@
-package com.horizon.helper;
+package horizon.helper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

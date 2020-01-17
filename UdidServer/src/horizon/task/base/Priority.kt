@@ -1,4 +1,4 @@
-package com.horizon.task.base
+package horizon.task.base
 
 /**
  * Define priority of task.

@@ -1,6 +1,6 @@
-package com.horizon.task.base
+package horizon.task.base
 
-import com.horizon.task.executor.PipeExecutor
+import horizon.task.executor.PipeExecutor
 
 /**
  * Custom PriorityQueue for [PipeExecutor.tasks]

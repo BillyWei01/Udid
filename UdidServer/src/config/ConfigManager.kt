@@ -1,7 +1,7 @@
 package config
 
 import com.alibaba.fastjson.JSON
-import com.horizon.util.IOUtil
+import horizon.util.IOUtil
 import java.io.BufferedInputStream
 import java.io.FileInputStream
 

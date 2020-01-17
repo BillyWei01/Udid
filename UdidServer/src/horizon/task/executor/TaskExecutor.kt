@@ -1,4 +1,4 @@
-package com.horizon.task.executor
+package horizon.task.executor
 
 
 import java.util.concurrent.Executor

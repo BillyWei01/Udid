@@ -1,7 +1,7 @@
-package com.horizon.task.executor
+package horizon.task.executor
 
-import com.horizon.task.base.CircularQueue
-import com.horizon.task.base.Priority
+import horizon.task.base.CircularQueue
+import horizon.task.base.Priority
 import java.util.*
 import java.util.concurrent.Future
 

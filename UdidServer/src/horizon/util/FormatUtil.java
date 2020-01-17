@@ -1,4 +1,4 @@
-package com.horizon.util;
+package horizon.util;
 
 public class FormatUtil {
     private static final byte[] HEX_DIGITS = {

@@ -1,4 +1,4 @@
-package com.horizon.util;
+package horizon.util;
 
 
 /**

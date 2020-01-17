@@ -1,4 +1,4 @@
-package com.horizon.task.executor
+package horizon.task.executor
 
 @Suppress("EqualsOrHashCode")
 internal class RunnableWrapper constructor(

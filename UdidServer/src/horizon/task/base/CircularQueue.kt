@@ -1,4 +1,4 @@
-package com.horizon.task.base
+package horizon.task.base
 
 /**
  * FIFO queue
@@ -41,7 +41,7 @@ internal class CircularQueue<E> {
         if (h.data == o) {
             return poll()
         }
-        val prev: Node<E> = h
+        var prev: Node<E> = h
         var curr: Node<E>? = prev.next
         while (curr != null) {
             if (curr.data == o) {
@@ -51,6 +51,7 @@ internal class CircularQueue<E> {
                 prev.next = curr.next
                 return curr.data
             } else {
+                prev = curr
                 curr = curr.next
             }
         }

@@ -1,4 +1,4 @@
-package com.horizon.util;
+package horizon.util;
 
 /**
  * 基本思路和 AES 相似，包含混淆层，扩散层，和轮加密。
@@ -76,7 +76,7 @@ public class LongEncoder {
     /*
      *  对8x8个bit做转置（将每个字节的bit打散到每个字节中)
      */
-    private static void transform(byte[] state, byte[] buf) {
+/*    private static void transform(byte[] state, byte[] buf) {
         for (int j = 0; j < 8; j++) {
             byte t = 0;
             t |= ((state[0] >> j) & 1);
@@ -92,7 +92,7 @@ public class LongEncoder {
         for (int j = 0; j < 8; j++) {
             state[j] = buf[j];
         }
-    }
+    }*/
 
     private static byte mul2(byte a) {
         return (byte) (((a & 0x80) != 0) ? ((a << 1) ^ 0x1b) : (a << 1));
@@ -194,11 +194,8 @@ public class LongEncoder {
             // transform 和 mix 两种方法都可以完成扩散
             // 其中，mix方法是AES的扩散算法
             // 可以自行调整比例
-            if ((i & 1) != 0) {
-                transform(state, buf);
-            } else {
-                mix(state, buf);
-            }
+            //transform(state, buf);
+            mix(state, buf);
         }
         for (int j = 0; j < 8; j++) {
             state[j] ^= KEY[(ROUND << 3) + j];
@@ -213,11 +210,8 @@ public class LongEncoder {
             state[j] ^= KEY[(ROUND << 3) + j];
         }
         for (int i = ROUND - 1; i >= 0; i--) {
-            if ((i & 1) != 0) {
-                transform(state, buf);
-            } else {
-                inv_mix(state, buf);
-            }
+            //transform(state, buf);
+            inv_mix(state, buf);
             for (int j = 0; j < 8; j++) {
                 int m = ((i << 3) + j);
                 state[j] = (byte) (INV_S_BOX[state[j] & 0xFF] ^ KEY[m]);

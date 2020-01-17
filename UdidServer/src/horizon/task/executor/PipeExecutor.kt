@@ -1,8 +1,8 @@
-package com.horizon.task.executor
+package horizon.task.executor
 
-import com.horizon.task.TaskCenter
-import com.horizon.task.base.Priority
-import com.horizon.task.base.PriorityQueue
+import horizon.task.TaskCenter
+import horizon.task.base.Priority
+import horizon.task.base.PriorityQueue
 import java.util.concurrent.RejectedExecutionHandler
 import java.util.concurrent.ThreadPoolExecutor
 

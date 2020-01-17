@@ -1,4 +1,4 @@
-package com.horizon.util;
+package horizon.util;
 
 public class StringUtil {
     public static String removeChar(String src, char ch){

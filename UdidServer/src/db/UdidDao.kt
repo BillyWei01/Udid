@@ -1,6 +1,6 @@
 package db
 
-import com.horizon.helper.DbHelper
+import horizon.helper.DbHelper
 
 import db.bean.DeviceId
 import db.bean.DidLog

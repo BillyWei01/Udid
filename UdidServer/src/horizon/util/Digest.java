@@ -1,4 +1,4 @@
-package com.horizon.util;
+package horizon.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
