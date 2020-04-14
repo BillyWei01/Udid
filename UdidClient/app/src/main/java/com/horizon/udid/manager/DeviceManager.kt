@@ -6,17 +6,18 @@ import com.horizon.did.PhysicsInfo
 import com.horizon.event.EventManager
 import com.horizon.task.TaskCenter
 import com.horizon.udid.application.GlobalConfig
-import com.horizon.udid.data.AppKv
+import com.horizon.udid.data.FastKv
+import com.horizon.udid.data.SafetyKv
 import com.horizon.udid.event.Events
 import com.horizon.udid.network.HttpClient
 import com.horizon.udid.network.URLConfig
+import com.horizon.udid.util.HexUtil
 import com.horizon.udid.util.NetworkUtil
 import com.horizon.udid.util.RandomUtil
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
-
 
 object DeviceManager {
     private const val TAG = "DeviceManager"
@@ -33,13 +34,13 @@ object DeviceManager {
         if (!NetworkUtil.isConnected) {
             return
         }
-        val udid = AppKv.udid
-        if (udid == 0L) {
+        val udid = SafetyKv.udid
+        if (udid.isEmpty()) {
             queryUdid()
         } else {
             val now = System.currentTimeMillis()
-            if(now - AppKv.lastSyncUdidTime > UPDATE_INTERVAL) {
-                AppKv.lastSyncUdidTime = now
+            if (now - FastKv.lastSyncUdidTime > UPDATE_INTERVAL) {
+                FastKv.lastSyncUdidTime = now
                 uploadDeviceInfo(udid)
             }
         }
@@ -57,16 +58,19 @@ object DeviceManager {
             AppLogger.i(TAG, response)
             val json = JSONObject(response)
             if (json.getInt("code") == 0) {
-                val udid = json.getLong("udid")
-                AppKv.udid = udid
+                val udid = json.getString("udid")
+                SafetyKv.udid = udid
                 EventManager.notify(Events.DEVICE_ID_SYNC_COMPLETE, udid)
+                FastKv.lastSyncUdidTime = System.currentTimeMillis()
+                return
             }
         } catch (e: Exception) {
             AppLogger.e(TAG, e)
         }
+        EventManager.notify(Events.DEVICE_ID_SYNC_COMPLETE, "")
     }
 
-    private fun uploadDeviceInfo(udid: Long) {
+    private fun uploadDeviceInfo(udid: String) {
         try {
             val requestJson = getDeviceInfo("update")
             requestJson.put("udid", udid)
@@ -90,8 +94,8 @@ object DeviceManager {
             put("android_id", DeviceId.getAndroidID(context))
             put("serial_no", DeviceId.getSerialNo())
             put("install_id", getInstallId())
-            put("physics_info", PhysicsInfo.getHash(context))
-            put("dark_physics_info", DarkPhysicsInfo.getHash(context))
+            put("physics_info", HexUtil.long2Hex(PhysicsInfo.getHash(context)))
+            put("dark_physics_info", HexUtil.long2Hex(DarkPhysicsInfo.getHash(context)))
         }
         requestJson.put("operation", operation)
         requestJson.put("device_id_info", deviceIdInfo)
@@ -100,10 +104,10 @@ object DeviceManager {
 
     @Synchronized
     fun getInstallId(): String {
-        var installId = AppKv.installId
+        var installId = SafetyKv.installId
         if (installId.isEmpty()) {
             installId = RandomUtil.randomUUID()
-            AppKv.installId = installId
+            SafetyKv.installId = installId
         }
         return installId
     }

@@ -35,7 +35,7 @@ object TaskCenter {
 //    val laneIO = LaneExecutor(io, true)
 //    val laneCP = LaneExecutor(computation, true)
 
-    // 相同的tag的任务会被串行执行，相当于串行的Executor(不过是tag相同的任务各自串行）
+    // 相同的tag的任务会被串行执行，相当于串行的Executor(只不过是tag相同的任务各自串行）
     // 可以用于一些日志类的任务
     val serial = LaneExecutor(PipeExecutor(Math.min(Math.max(2, cpuCount), 4)))
 }

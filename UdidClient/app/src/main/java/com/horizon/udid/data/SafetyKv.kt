@@ -4,15 +4,17 @@ import com.horizon.lightkv.KVData
 import com.horizon.lightkv.LightKV
 import com.horizon.task.TaskCenter
 import com.horizon.udid.application.GlobalConfig
+import com.horizon.udid.manager.AppLogger
 
-object AppKv  : KVData() {
+object SafetyKv : KVData() {
     override val data: LightKV by lazy {
-        LightKV.Builder(GlobalConfig.context, "app_kv")
+        // sync()模式， 同步写入，双备份，更加安全
+        LightKV.Builder(GlobalConfig.context, "kv_safety")
+            .logger(AppLogger)
             .executor(TaskCenter.computation)
-            .async()
+            .sync()
     }
 
-    var udid by long(1)
+    var udid by string(1)
     var installId by string(2)
-    var lastSyncUdidTime by long(3)
 }

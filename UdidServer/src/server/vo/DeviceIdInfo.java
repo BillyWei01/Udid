@@ -12,10 +12,10 @@ public class DeviceIdInfo {
     private String serialNo;
 
     @JSONField(name = "physics_info")
-    private long physicsInfoHash;
+    private String physicsInfoHash;
 
     @JSONField(name = "dark_physics_info")
-    private long darkPhysicsInfoHash;
+    private String darkPhysicsInfoHash;
 
     @JSONField(name = "install_id")
     private String installId;
@@ -44,19 +44,19 @@ public class DeviceIdInfo {
         this.serialNo = serialNo;
     }
 
-    public long getPhysicsInfoHash() {
+    public String getPhysicsInfoHash() {
         return physicsInfoHash;
     }
 
-    public void setPhysicsInfoHash(long physicsInfoHash) {
+    public void setPhysicsInfoHash(String physicsInfoHash) {
         this.physicsInfoHash = physicsInfoHash;
     }
 
-    public long getDarkPhysicsInfoHash() {
+    public String getDarkPhysicsInfoHash() {
         return darkPhysicsInfoHash;
     }
 
-    public void setDarkPhysicsInfoHash(long darkPhysicsInfoHash) {
+    public void setDarkPhysicsInfoHash(String darkPhysicsInfoHash) {
         this.darkPhysicsInfoHash = darkPhysicsInfoHash;
     }
 

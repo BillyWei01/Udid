@@ -1,14 +1,57 @@
-package horizon.util;
+package com.horizon.udid.util;
 
-public class FormatUtil {
-    private static final byte[] HEX_DIGITS = {
+public class HexUtil {
+    private static final char[] HEX_DIGITS = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'a', 'b', 'c', 'd', 'e', 'f'};
 
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
+    /**
+     * 小于2^48的long数值转十六进制字符串
+     * @param n long类型整数
+     * @return 12字节的字符串（十六进制）
+     */
+    public static String long48ToHex(long n) {
+        if((n >>> 48) > 0){
+            throw new IllegalArgumentException(n + " is bigger than 2^48");
+        }
+        char[] buf = new char[12];
+        for (int i = 5; i >= 0; i--) {
+            int b = (int) n;
+            int index = i << 1;
+            buf[index] = HEX_DIGITS[(b >> 4) & 0xF];
+            buf[index + 1] = HEX_DIGITS[b & 0xF];
+            n = n >>> 8;
+        }
+        return new String(buf);
+    }
+
+    /**
+     * 十六进制字符串转long类型整数
+     * @param hex 12字节的字符串（十六进制）
+     * @return long类型整数
+     */
+    public static long hexToLong48(String hex) {
+        if (hex == null || hex.isEmpty()) {
+            return 0L;
+        }
+        byte[] buf = hex.getBytes();
+        int len = buf.length;
+        if (len != 12) {
+            throw new NumberFormatException("invalid hex number, must be length of 12");
+        }
+
+        long a = 0L;
+        for (byte b : buf) {
+            a <<= 4;
+            a |= byte2Int(b);
+        }
+        return a;
+    }
+
     public static String long2Hex(long a) {
-        byte[] buf = new byte[16];
+        char[] buf = new char[16];
         for (int i = 7; i >= 0; i--) {
             int b = (int) a;
             int index = i << 1;
@@ -50,7 +93,7 @@ public class FormatUtil {
             return "";
         }
         int len = bytes.length;
-        byte[] buf = new byte[len << 1];
+        char[] buf = new char[len << 1];
         for (int i = 0; i < len; i++) {
             int b = bytes[i];
             int index = i << 1;

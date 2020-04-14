@@ -3,7 +3,7 @@ package com.horizon.udid
 import android.annotation.SuppressLint
 import android.os.Bundle
 import com.horizon.udid.base.BaseActivity
-import com.horizon.udid.data.AppKv
+import com.horizon.udid.data.SafetyKv
 import com.horizon.udid.event.Events
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -13,9 +13,9 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if(AppKv.udid != 0L){
-            test_tv.text = "udid: " + AppKv.udid
-        }else{
+        if (SafetyKv.udid.isNotEmpty()) {
+            test_tv.text = "udid: " + SafetyKv.udid
+        } else {
             test_tv.text = "loading udid..."
         }
     }
@@ -26,12 +26,16 @@ class MainActivity : BaseActivity() {
 
     @SuppressLint("SetTextI18n")
     override fun onEvent(event: Int, vararg args: Any?) {
-        when(event){
-            Events.DEVICE_ID_SYNC_COMPLETE ->{
-                val udid = args[0] as Long
-                test_tv.text = "get udid: $udid"
+        when (event) {
+            Events.DEVICE_ID_SYNC_COMPLETE -> {
+                val udid = args[0] as String?
+                if (udid.isNullOrEmpty()) {
+                    test_tv.text = "get udid failed"
+                } else {
+                    test_tv.text = "get udid: $udid"
+                }
             }
         }
     }
-
 }
+

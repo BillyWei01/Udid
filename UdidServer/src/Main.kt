@@ -4,7 +4,6 @@ import config.ConfigManager
 import server.UdidHandler
 import java.net.InetSocketAddress
 
-
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
@@ -15,12 +14,11 @@ object Main {
         server.createContext(UdidHandler.PATH, UdidHandler())
         server.executor = TaskCenter.io
         server.start()
-        println("Server is listening on port 8080")
+        println("Server is listening on port: " + address.port)
     }
 
     private fun init() {
         val serverId = ConfigManager.serverConfig.serverId
-        System.out.println("server $serverId start running")
-
+        println("server $serverId start running")
     }
 }

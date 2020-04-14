@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit
 object HttpClient {
     private val client : OkHttpClient by lazy {
         OkHttpClient.Builder()
-            .readTimeout(20, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(20, TimeUnit.SECONDS)
             .cache(Cache(File(PathManager.CACHE_PATH, "http"), (128L shl 20)))
             .build()
