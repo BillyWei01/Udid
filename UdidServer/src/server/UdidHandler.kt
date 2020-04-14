@@ -153,8 +153,7 @@ class UdidHandler : HttpHandler {
         //
         // 当前IdGenerator生成的ID是小于等于48bit,
         // 所以只需对低48bit加密，这样高16bit还是0, 转成十六进制的话只有12字节。
-        // 通过LongEncoder.encode48, 会将seq随机地映射到2^48的空间，
-        // 2^48有两百多万亿，应该不怕被撞库之类的；
+        // 通过LongEncoder.encode48, 会将seq随机地映射到2^48（两百多万亿）的空间。
         // 如果觉得还不够安全，可以用LongEncoder.encode64。
         r.seq = IdGenerator.getUdidSeq()
         r.udid = LongEncoder.encode48(r.seq)
