@@ -1,16 +1,19 @@
 ## UDID
 
-本项目提供一种Android移动设备构造UDID的方案。
+本项目提供一种Android移动设备构造UDID的方案。<br/>
 项目分为两个目录，UdidClient和UdidServer。
 
 ## 使用方法
 
 客户端和服务端分别在Android Studio和Intellij IDEA上开发，在对应的IDE上运行即可。
 
-服务端代码，服务监听用的JDK自带的HttpServer，数据库用的sqlite-jdbc。
-可能需要到 Project Structure 配置一下依赖。
-如图：
-![](server_config.png)
+服务端代码，服务监听用的JDK自带的HttpServer，数据库用的sqlite-jdbc。<br/>
+可能需要到 Project Structure 配置一下依赖。<br/>
+如图：<br/>
+![image](server_config.png)
+
+最近github有可能访问不了图片，可以clone项目下来再打开。
+
 
 客户端代码，需要先修改URLConfig的地址:
 
