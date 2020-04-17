@@ -17,9 +17,6 @@ public class DeviceIdInfo {
     @JSONField(name = "dark_physics_info")
     private String darkPhysicsInfoHash;
 
-    @JSONField(name = "install_id")
-    private String installId;
-
     public String getMac() {
         return mac;
     }
@@ -59,12 +56,5 @@ public class DeviceIdInfo {
     public void setDarkPhysicsInfoHash(String darkPhysicsInfoHash) {
         this.darkPhysicsInfoHash = darkPhysicsInfoHash;
     }
-
-    public String getInstallId() {
-        return installId;
-    }
-
-    public void setInstallId(String installId) {
-        this.installId = installId;
-    }
 }
+

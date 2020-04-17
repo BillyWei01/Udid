@@ -1,8 +1,7 @@
 package com.horizon.udid.application
 
 import android.app.Application
-import com.horizon.udid.data.FastKv
-import com.horizon.udid.data.SafetyKv
+import com.horizon.udid.data.AppKv
 
 class AppApplication : Application() {
     override fun onCreate() {
@@ -10,8 +9,7 @@ class AppApplication : Application() {
         GlobalConfig.context = this.applicationContext
 
         // just call data() for loading data async
-        SafetyKv.data
-        FastKv.data
+        AppKv.data
 
         AppInitManager.appInit()
     }

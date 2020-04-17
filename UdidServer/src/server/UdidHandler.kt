@@ -9,13 +9,8 @@ import com.sun.net.httpserver.HttpHandler
 import db.IdGenerator
 import db.UdidDao
 import db.bean.DeviceId
-import db.bean.DidLog
-import db.bean.InstallLog
 import server.vo.DeviceIdInfo
-
 import java.io.IOException
-import java.lang.IllegalStateException
-import java.nio.ByteBuffer
 
 class UdidHandler : HttpHandler {
     companion object {
@@ -63,8 +58,7 @@ class UdidHandler : HttpHandler {
 
         if (info.mac.isNullOrEmpty()
                 && info.androidId.isNullOrEmpty()
-                && info.serialNo.isNullOrEmpty()
-                && info.installId.isNullOrEmpty()) {
+                && info.serialNo.isNullOrEmpty()) {
             responseIllegal(exchange)
             return
         }
@@ -80,68 +74,26 @@ class UdidHandler : HttpHandler {
         r.physics_info = HexUtil.hex2Long(info.physicsInfoHash)
         r.dark_physics_info = HexUtil.hex2Long(info.darkPhysicsInfoHash)
 
-        var hasUpdateDeviceId = false
         when (operation) {
             OP_QUERY -> {
                 val deviceIdList = UdidDao.queryDeviceId(mac, serialNo, androidId)
                 val didFormDb = matchDeviceId(deviceIdList, r)
-                hasUpdateDeviceId = if (didFormDb != null) {
+                if (didFormDb != null) {
                     updateDeviceId(didFormDb, r)
                 } else {
                     insertDeviceId(r)
-                    true
                 }
                 responseQuery(exchange, r.udid)
             }
             OP_UPDATE -> {
                 responseUpdate(exchange)
                 UdidDao.queryDeviceId(udid)?.let {
-                    hasUpdateDeviceId = updateDeviceId(it, r)
+                    updateDeviceId(it, r)
                 }
             }
             else -> {
                 responseIllegal(exchange)
-                hasUpdateDeviceId = false
             }
-        }
-
-        if (hasUpdateDeviceId) {
-            // 保存日志属性的信息，实时性不高，可以开一个串行的队列即可
-            TaskCenter.serial.execute("addDidLog", {
-                addDidLog(info, r, operation)
-            })
-        }
-    }
-
-    // 新增或者变更设备信息，都做一下记录，以便在需要时做追踪分析
-    private fun addDidLog(info: DeviceIdInfo, r: DeviceId, operation: String) {
-        val now = System.currentTimeMillis()
-
-        if (!(r.mac == 0L && r.serial_no == 0L && r.android_id == 0L)) {
-            val buffer = ByteBuffer.allocate(40)
-            buffer.putLong(r.mac)
-            buffer.putLong(r.serial_no)
-            buffer.putLong(r.android_id)
-            buffer.putLong(r.physics_info)
-            buffer.putLong(r.dark_physics_info)
-            val didLog = DidLog()
-            didLog.md5 = Digest.getShortMd5(buffer.array())
-            didLog.udid = r.udid
-            didLog.mac = info.mac
-            didLog.serial_no = info.serialNo
-            didLog.android_id = info.androidId
-            didLog.physics_info = r.physics_info
-            didLog.dark_physics_info = r.dark_physics_info
-            didLog.create_time = now
-            UdidDao.insertDidLog(didLog)
-        }
-
-        if (operation == OP_QUERY) {
-            val installLog = InstallLog()
-            installLog.install_id = info.installId
-            installLog.udid = r.udid
-            installLog.create_time = now
-            UdidDao.insertInstallLog(installLog)
         }
     }
 

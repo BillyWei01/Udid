@@ -13,4 +13,6 @@
 /UdidClient/.idea
 /UdidServer/.idea
 /UdidServer/out
+/UdidServer/data
+/UdidServer/build/*
 /UdidClient/did/.cxx

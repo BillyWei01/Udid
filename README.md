@@ -7,7 +7,10 @@
 
 客户端和服务端分别在Android Studio和Intellij IDEA上开发，在对应的IDE上运行即可。
 
-服务端代码，服务监听用的JDK自带的HttpServer，数据库用的sqlite-jdbc, 建立Application, 添加一下依赖，就可以运行了。
+服务端代码，服务监听用的JDK自带的HttpServer，数据库用的sqlite-jdbc。
+可能需要到 Project Structure 配置一下依赖。
+如图：
+![](server_config.png)
 
 客户端代码，需要先修改URLConfig的地址:
 

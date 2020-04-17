@@ -6,14 +6,12 @@ import com.horizon.did.PhysicsInfo
 import com.horizon.event.EventManager
 import com.horizon.task.TaskCenter
 import com.horizon.udid.application.GlobalConfig
-import com.horizon.udid.data.FastKv
-import com.horizon.udid.data.SafetyKv
+import com.horizon.udid.data.AppKv
 import com.horizon.udid.event.Events
 import com.horizon.udid.network.HttpClient
 import com.horizon.udid.network.URLConfig
 import com.horizon.udid.util.HexUtil
 import com.horizon.udid.util.NetworkUtil
-import com.horizon.udid.util.RandomUtil
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -34,13 +32,13 @@ object DeviceManager {
         if (!NetworkUtil.isConnected) {
             return
         }
-        val udid = SafetyKv.udid
+        val udid = AppKv.udid
         if (udid.isEmpty()) {
             queryUdid()
         } else {
             val now = System.currentTimeMillis()
-            if (now - FastKv.lastSyncUdidTime > UPDATE_INTERVAL) {
-                FastKv.lastSyncUdidTime = now
+            if (now - AppKv.lastSyncUdidTime > UPDATE_INTERVAL) {
+                AppKv.lastSyncUdidTime = now
                 uploadDeviceInfo(udid)
             }
         }
@@ -59,9 +57,9 @@ object DeviceManager {
             val json = JSONObject(response)
             if (json.getInt("code") == 0) {
                 val udid = json.getString("udid")
-                SafetyKv.udid = udid
+                AppKv.udid = udid
                 EventManager.notify(Events.DEVICE_ID_SYNC_COMPLETE, udid)
-                FastKv.lastSyncUdidTime = System.currentTimeMillis()
+                AppKv.lastSyncUdidTime = System.currentTimeMillis()
                 return
             }
         } catch (e: Exception) {
@@ -93,7 +91,6 @@ object DeviceManager {
             put("mac", DeviceId.getMacAddress())
             put("android_id", DeviceId.getAndroidID(context))
             put("serial_no", DeviceId.getSerialNo())
-            put("install_id", getInstallId())
             put("physics_info", HexUtil.long2Hex(PhysicsInfo.getHash(context)))
             put("dark_physics_info", HexUtil.long2Hex(DarkPhysicsInfo.getHash(context)))
         }
@@ -102,15 +99,7 @@ object DeviceManager {
         return requestJson
     }
 
-    @Synchronized
-    fun getInstallId(): String {
-        var installId = SafetyKv.installId
-        if (installId.isEmpty()) {
-            installId = RandomUtil.randomUUID()
-            SafetyKv.installId = installId
-        }
-        return installId
-    }
+
 
 
 }

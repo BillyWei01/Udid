@@ -6,9 +6,8 @@ import com.horizon.task.TaskCenter
 import com.horizon.udid.application.GlobalConfig
 import com.horizon.udid.manager.AppLogger
 
-object SafetyKv : KVData() {
+object AppKv : KVData() {
     override val data: LightKV by lazy {
-        // sync()模式， 同步写入，双备份，更加安全
         LightKV.Builder(GlobalConfig.context, "kv_safety")
             .logger(AppLogger)
             .executor(TaskCenter.computation)
@@ -16,5 +15,5 @@ object SafetyKv : KVData() {
     }
 
     var udid by string(1)
-    var installId by string(2)
+    var lastSyncUdidTime by long(2)
 }

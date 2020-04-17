@@ -3,7 +3,7 @@ package com.horizon.udid
 import android.annotation.SuppressLint
 import android.os.Bundle
 import com.horizon.udid.base.BaseActivity
-import com.horizon.udid.data.SafetyKv
+import com.horizon.udid.data.AppKv
 import com.horizon.udid.event.Events
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -13,8 +13,8 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (SafetyKv.udid.isNotEmpty()) {
-            test_tv.text = "udid: " + SafetyKv.udid
+        if (AppKv.udid.isNotEmpty()) {
+            test_tv.text = "udid: " + AppKv.udid
         } else {
             test_tv.text = "loading udid..."
         }

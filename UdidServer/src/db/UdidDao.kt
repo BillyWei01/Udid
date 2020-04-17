@@ -3,8 +3,6 @@ package db
 import horizon.helper.DbHelper
 
 import db.bean.DeviceId
-import db.bean.DidLog
-import db.bean.InstallLog
 import java.sql.ResultSet
 
 object UdidDao {
@@ -113,59 +111,6 @@ object UdidDao {
             statement.setLong(9, deviceId.update_time)
             statement.executeUpdate()
         } finally {
-            DbHelper.closeQuietly(statement)
-        }
-    }
-
-    fun insertDidLog(didLog: DidLog) {
-        if (exist("SELECT 1 FROM t_did_log WHERE md5='" + didLog.md5 + "'")) {
-            return
-        }
-        val sql = "INSERT INTO t_did_log" +
-                "(md5, udid, mac, android_id, serial_no, physics_info, dark_physics_info," +
-                " create_time) VALUES (?,?,?,?,?,?,?,?)"
-        val statement = dbHelper.connection.prepareStatement(sql)
-        try {
-            statement.setString(1, didLog.md5)
-            statement.setLong(2, didLog.udid)
-            statement.setString(3, didLog.mac)
-            statement.setString(4, didLog.android_id)
-            statement.setString(5, didLog.serial_no)
-            statement.setLong(6, didLog.physics_info)
-            statement.setLong(7, didLog.dark_physics_info)
-            statement.setLong(8, didLog.create_time)
-            statement.executeUpdate()
-        } finally {
-            DbHelper.closeQuietly(statement)
-        }
-    }
-
-    fun insertInstallLog(installLog: InstallLog) {
-        if (exist("SELECT 1 FROM t_install_log WHERE install_id='" + installLog.install_id + "'")) {
-            return
-        }
-        val sql = "INSERT INTO t_install_log" +
-                "(install_id, udid, create_time)" +
-                " VALUES (?,?,?)"
-        val statement = dbHelper.connection.prepareStatement(sql)
-        try {
-            statement.setString(1, installLog.install_id)
-            statement.setLong(2, installLog.udid)
-            statement.setLong(3, installLog.create_time)
-            statement.executeUpdate()
-        } finally {
-            DbHelper.closeQuietly(statement)
-        }
-    }
-
-    private fun exist(sql: String): Boolean {
-        val statement = dbHelper.connection.createStatement()
-        var rs: ResultSet? = null
-        try {
-            rs = statement.executeQuery(sql)
-            return rs.next()
-        } finally {
-            DbHelper.closeQuietly(rs)
             DbHelper.closeQuietly(statement)
         }
     }
