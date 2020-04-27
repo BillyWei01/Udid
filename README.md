@@ -12,8 +12,6 @@
 如图：<br/>
 ![image](server_config.png)
 
-最近github有可能访问不了图片，可以clone项目下来再打开。
-
 
 客户端代码，需要先修改URLConfig的地址:
 
