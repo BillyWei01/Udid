@@ -94,7 +94,7 @@ public class DeviceId {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             return "";
         }
-        String serialNo = NativeLib.getSystemProperty("ro.serialno");
+        String serialNo = Build.SERIAL;
         if (TextUtils.isEmpty(serialNo) || serialNo.equals(Build.UNKNOWN)) {
             return "";
         }

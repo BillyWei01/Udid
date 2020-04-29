@@ -16,3 +16,4 @@
 /UdidServer/data
 /UdidServer/build/*
 /UdidClient/did/.cxx
+.DS_Store

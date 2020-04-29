@@ -13,6 +13,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         if (AppKv.udid.isNotEmpty()) {
             test_tv.text = "udid: " + AppKv.udid
         } else {
