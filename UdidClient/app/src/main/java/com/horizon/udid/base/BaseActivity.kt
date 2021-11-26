@@ -2,8 +2,8 @@ package com.horizon.udid.base
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.horizon.event.EventManager
-import com.horizon.event.Observer
+import com.horizon.udid.event.EventManager
+import com.horizon.udid.event.Observer
 
 abstract class BaseActivity : AppCompatActivity(), Observer {
     override fun onCreate(savedInstanceState: Bundle?) {

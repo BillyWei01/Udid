@@ -1,5 +1,5 @@
 package com.horizon.udid.network
 
 object URLConfig {
-    const val DEVICE_ID_SERVER = "http://192.168.0.120:8080"
+    const val DEVICE_ID_SERVER = "http://10.71.176.72:8080"
 }

@@ -1,22 +1,21 @@
 package com.horizon.udid.manager
 
 import android.util.Log
-import com.horizon.lightkv.LightKV
 import com.horizon.udid.BuildConfig
+import io.fastkv.FastKV
+import java.lang.Exception
 
-object AppLogger : LightKV.Logger {
-    @JvmStatic
-    fun e(tag: String, msg: String) {
-        Log.e(tag, msg)
+object AppLogger : FastKV.Logger {
+    override fun i(tag: String, message: String) {
+        Log.i(tag, message)
     }
 
-    override fun e(tag: String, t: Throwable) {
-        Log.e(tag, t.message, t)
+    override fun w(tag: String, e: Exception) {
+        Log.w(tag, e)
     }
 
-    @JvmStatic
-    fun i(tag: String, msg: String) {
-        Log.i(tag, msg)
+    override fun e(tag: String, e: Exception) {
+        Log.e(tag, e.message, e)
     }
 
     @JvmStatic

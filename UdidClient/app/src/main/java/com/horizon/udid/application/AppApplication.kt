@@ -8,9 +8,6 @@ class AppApplication : Application() {
         super.onCreate()
         GlobalConfig.context = this.applicationContext
 
-        // just call data() for loading data async
-        AppKv.data
-
         AppInitManager.appInit()
     }
 }

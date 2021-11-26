@@ -3,15 +3,17 @@ package com.horizon.udid.manager
 import com.horizon.did.DarkPhysicsInfo
 import com.horizon.did.DeviceId
 import com.horizon.did.PhysicsInfo
-import com.horizon.event.EventManager
-import com.horizon.task.TaskCenter
 import com.horizon.udid.application.GlobalConfig
 import com.horizon.udid.data.AppKv
+import com.horizon.udid.event.EventManager
 import com.horizon.udid.event.Events
 import com.horizon.udid.network.HttpClient
 import com.horizon.udid.network.URLConfig
 import com.horizon.udid.util.HexUtil
 import com.horizon.udid.util.NetworkUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -25,7 +27,9 @@ object DeviceManager {
     private val JSON_TYPE = MediaType.parse("application/json")
 
     fun syncDeviceIdAsync() {
-        TaskCenter.laneIO.execute("syncDeviceId", { syncDeviceId() })
+        GlobalScope.launch(Dispatchers.IO){
+            syncDeviceId()
+        }
     }
 
     private fun syncDeviceId() {

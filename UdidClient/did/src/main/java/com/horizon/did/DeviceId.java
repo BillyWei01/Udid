@@ -12,7 +12,7 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 
 public class DeviceId {
-    private static final byte[] HEX_DIGITS = {
+    private static final char[] HEX_DIGITS = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
@@ -65,7 +65,7 @@ public class DeviceId {
         if (bytes == null || bytes.length != 6) {
             return "";
         }
-        byte[] mac = new byte[17];
+        char[] mac = new char[17];
         int p = 0;
         for (int i = 0; i <= 5; i++) {
             byte b = bytes[i];

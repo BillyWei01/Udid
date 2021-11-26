@@ -1,5 +1,8 @@
 package horizon.helper;
 
+import horizon.util.IOUtil;
+
+import java.io.File;
 import java.sql.*;
 
 public abstract class SQLiteOpenHelper {
@@ -16,6 +19,7 @@ public abstract class SQLiteOpenHelper {
     public SQLiteOpenHelper(String dbPath, int version) {
         Statement statement = null;
         try {
+            IOUtil.makeFileIfNotExist(new File(dbPath));
             mConnection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             if(mConnection == null){
                 throw new IllegalStateException("Failure to connect database:" + dbPath);
@@ -35,7 +39,7 @@ public abstract class SQLiteOpenHelper {
                         + userVersion + " target version:" + version);
             }
             statement.execute("PRAGMA user_version=" + version);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }finally {
             DbHelper.closeQuietly(statement);
