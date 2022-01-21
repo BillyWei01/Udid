@@ -4,17 +4,13 @@ package horizon.util;
  * 基本思路和 AES 相似，包含混淆层，扩散层，和轮加密。
  * 轮加密所用密钥不需要经过密钥扩展，而是直接用 SecureRandom 生成。
  * 若使用，请记得生成自己的密钥。
- *
- * 参考文档：
- * https://juejin.im/post/5e5b43ca51882549361e5d32
- * https://github.com/No89757/LongEncrypt
  */
 public class LongEncoder {
     /*
-    // Generate Keys
+    // generate Keys,
     private static void getKey(){
         SecureRandom r = new SecureRandom();
-        int round = 8;
+        int round = 4;
         byte[] bytes = new byte[(round + 1) * 8];
         r.nextBytes(bytes);
         for (int i = 0; i < round + 1; i++) {
@@ -25,7 +21,7 @@ public class LongEncoder {
         }
     }
     */
-    private static final int ROUND = 8;
+    private static final int ROUND = 4;
 
     private static final byte[] S_BOX = {
             99, 124, 119, 123, -14, 107, 111, -59, 48, 1, 103, 43, -2, -41, -85, 118,
@@ -65,67 +61,103 @@ public class LongEncoder {
             23, 43, 4, 126, -70, 119, -42, 38, -31, 105, 20, 99, 85, 33, 12, 125
     };
 
+    private static final byte[] mul2 = {
+            0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,
+            32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62,
+            64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94,
+            96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126,
+            -128, -126, -124, -122, -120, -118, -116, -114, -112, -110, -108, -106, -104, -102, -100, -98,
+            -96, -94, -92, -90, -88, -86, -84, -82, -80, -78, -76, -74, -72, -70, -68, -66,
+            -64, -62, -60, -58, -56, -54, -52, -50, -48, -46, -44, -42, -40, -38, -36, -34,
+            -32, -30, -28, -26, -24, -22, -20, -18, -16, -14, -12, -10, -8, -6, -4, -2,
+            27, 25, 31, 29, 19, 17, 23, 21, 11, 9, 15, 13, 3, 1, 7, 5,
+            59, 57, 63, 61, 51, 49, 55, 53, 43, 41, 47, 45, 35, 33, 39, 37,
+            91, 89, 95, 93, 83, 81, 87, 85, 75, 73, 79, 77, 67, 65, 71, 69,
+            123, 121, 127, 125, 115, 113, 119, 117, 107, 105, 111, 109, 99, 97, 103, 101,
+            -101, -103, -97, -99, -109, -111, -105, -107, -117, -119, -113, -115, -125, -127, -121, -123,
+            -69, -71, -65, -67, -77, -79, -73, -75, -85, -87, -81, -83, -93, -95, -89, -91,
+            -37, -39, -33, -35, -45, -47, -41, -43, -53, -55, -49, -51, -61, -63, -57, -59,
+            -5, -7, -1, -3, -13, -15, -9, -11, -21, -23, -17, -19, -29, -31, -25, -27};
+
+
     private static final byte[] KEY = {
-            -14, 41, 52, -119, -126, -47, 74, 73,
-            -124, 81, -14, 116, 107, -5, 90, -97,
+            -14, 40, 52, -119, -126, -47, 74, 73,
+            -124, 81, -14, 116, 107, -5, 89, -97,
             49, 93, -121, -40, -55, -107, 117, 83,
             65, 92, -2, -51, 8, 111, 106, 84,
-            44, 53, -29, -52, -47, -33, -2, -45,
-            119, 58, 50, -39, 41, -41, -124, -19,
-            -27, 102, -84, 58, -43, -86, -98, 9,
-            -93, -102, 58, 117, 7, -69, 24, -49,
-            -17, -111, 81, -56, 6, 55, 121, -23};
+            44, 53, -29, -52, -47, -33, -2, -45
+    };
 
-    private static byte mul2(byte a) {
-        return (byte) (((a & 0x80) != 0) ? ((a << 1) ^ 0x1b) : (a << 1));
+    /*
+     * [b0]	  [02 03 01 01]   [b0]
+     * [b1]	= [01 02 03 01] . [b1]
+     * [b2]	  [01 01 02 03]   [b2]
+     * [b3]	  [03 01 01 02]   [b3]
+     */
+    private static void multiply(byte[] b) {
+        byte a0 = (byte) (b[0] ^ b[1]);
+        byte a1 = (byte) (b[1] ^ b[2]);
+        byte a2 = (byte) (b[2] ^ b[3]);
+        byte a3 = (byte) (b[3] ^ b[0]);
+        byte t = (byte) (a0 ^ a2);
+        b[0] ^= mul2[a0 & 0xFF] ^ t;
+        b[1] ^= mul2[a1 & 0xFF] ^ t;
+        b[2] ^= mul2[a2 & 0xFF] ^ t;
+        b[3] ^= mul2[a3 & 0xFF] ^ t;
     }
 
-    public static void mix_column(byte[] s, int i) {
-        /*
-         * 左乘置换矩阵
-         * [b0]	  [02 03 01 01]   [s0]
-         * [b1]	= [01 02 03 01] . [s1]
-         * [b2]	  [01 01 02 03]   [s2]
-         * [b3]	  [03 01 01 02]   [s3]
-         */
-        byte t = (byte) (s[i] ^ s[1 + i] ^ s[2 + i] ^ s[3 + i]);
-        byte b0 = (byte) (mul2((byte) (s[i] ^ s[1 + i])) ^ s[i] ^ t);
-        byte b1 = (byte) (mul2((byte) (s[1 + i] ^ s[2 + i])) ^ s[1 + i] ^ t);
-        byte b2 = (byte) (mul2((byte) (s[2 + i] ^ s[3 + i])) ^ s[2 + i] ^ t);
-        byte b3 = (byte) (mul2((byte) (s[3 + i] ^ s[i])) ^ s[3 + i] ^ t);
-
-        s[i] = b0;
-        s[1 + i] = b1;
-        s[2 + i] = b2;
-        s[3 + i] = b3;
+    private static void multiply_2(byte[] b) {
+        byte a0 = (byte) (b[2] ^ b[3]);
+        byte a1 = (byte) (b[3] ^ b[4]);
+        byte a2 = (byte) (b[4] ^ b[5]);
+        byte a3 = (byte) (b[5] ^ b[2]);
+        byte t = (byte) (a0 ^ a2);
+        b[2] ^= mul2[a0 & 0xFF] ^ t;
+        b[3] ^= mul2[a1 & 0xFF] ^ t;
+        b[4] ^= mul2[a2 & 0xFF] ^ t;
+        b[5] ^= mul2[a3 & 0xFF] ^ t;
     }
 
-    public static void inv_mix_column(byte[] s, int i) {
-        /*
-         * 左乘置换矩阵的逆矩阵
-         * [d0]	  [0e 0b 0d 09]   [b0]
-         * [d1]	= [09 0e 0b 0d] . [b1]
-         * [d2]	  [0d 09 0e 0b]   [b2]
-         * [d3]	  [0b 0d 09 0e]   [b3]
-         */
-        byte t, u, v;
-        t = (byte) (s[i] ^ s[1 + i] ^ s[2 + i] ^ s[3 + i]);
-        byte b0 = (byte) (t ^ s[i] ^ mul2((byte) (s[i] ^ s[1 + i])));
-        byte b1 = (byte) (t ^ s[1 + i] ^ mul2((byte) (s[1 + i] ^ s[2 + i])));
-        byte b2 = (byte) (t ^ s[2 + i] ^ mul2((byte) (s[2 + i] ^ s[3 + i])));
-        byte b3 = (byte) (t ^ s[3 + i] ^ mul2((byte) (s[3 + i] ^ s[i])));
-        u = mul2(mul2((byte) (s[i] ^ s[2 + i])));
-        v = mul2(mul2((byte) (s[1 + i] ^ s[3 + i])));
-        t = mul2((byte) (u ^ v));
-        b0 ^= t ^ u;
-        b1 ^= t ^ v;
-        b2 ^= t ^ u;
-        b3 ^= t ^ v;
+    private static void multiply_4(byte[] b) {
+        byte a0 = (byte) (b[4] ^ b[5]);
+        byte a1 = (byte) (b[5] ^ b[6]);
+        byte a2 = (byte) (b[6] ^ b[7]);
+        byte a3 = (byte) (b[7] ^ b[4]);
+        byte t = (byte) (a0 ^ a2);
+        b[4] ^= mul2[a0 & 0xFF] ^ t;
+        b[5] ^= mul2[a1 & 0xFF] ^ t;
+        b[6] ^= mul2[a2 & 0xFF] ^ t;
+        b[7] ^= mul2[a3 & 0xFF] ^ t;
+    }
 
-        s[i] = b0;
-        s[1 + i] = b1;
-        s[2 + i] = b2;
-        s[3 + i] = b3;
+
+    /*
+     * [d0]	  [0e 0b 0d 09]   [b0]
+     * [d1]	= [09 0e 0b 0d] . [b1]
+     * [d2]	  [0d 09 0e 0b]   [b2]
+     * [d3]	  [0b 0d 09 0e]   [b3]
+     */
+    private static void inv_multiply(byte[] b, int i) {
+        byte u = (byte) (b[i] ^ b[i + 2]);
+        byte v = (byte) (b[i + 1] ^ b[i + 3]);
+        if (i == 0) {
+            multiply(b);
+        } else if (i == 2) {
+            multiply_2(b);
+        } else if (i == 4) {
+            multiply_4(b);
+        } else {
+            throw new IllegalArgumentException("invalid i:" + i);
+        }
+        u = mul2[mul2[u & 0xFF] & 0xFF];
+        v = mul2[mul2[v & 0xFF] & 0xFF];
+        byte t = mul2[(u ^ v) & 0xFF];
+        u ^= t;
+        v ^= t;
+        b[i] ^= u;
+        b[i + 1] ^= v;
+        b[i + 2] ^= u;
+        b[i + 3] ^= v;
     }
 
     private static void shift_rows(byte[] state) {
@@ -163,8 +195,8 @@ public class LongEncoder {
                 state[j] = S_BOX[(state[j] ^ KEY[m]) & 0xFF];
             }
             shift_rows(state);
-            mix_column(state, 0);
-            mix_column(state, 4);
+            multiply(state);
+            multiply_4(state);
         }
         for (int j = 0; j < 8; j++) {
             state[j] ^= KEY[(ROUND << 3) + j];
@@ -178,8 +210,8 @@ public class LongEncoder {
             state[j] ^= KEY[(ROUND << 3) + j];
         }
         for (int i = ROUND - 1; i >= 0; i--) {
-            inv_mix_column(state, 0);
-            inv_mix_column(state, 4);
+            inv_multiply(state, 0);
+            inv_multiply(state, 4);
             inv_shift_rows(state);
             for (int j = 0; j < 8; j++) {
                 int m = ((i << 3) + j);
@@ -199,8 +231,8 @@ public class LongEncoder {
             }
             // 对于48bit的输入而言，就不需要ShiftRows了
             // 因为先后对[0,3], [2,5]进行MixColumns已经可以对整个输入扩散了
-            mix_column(state, 0);
-            mix_column(state, 2);
+            multiply(state);
+            multiply_2(state);
         }
         for (int j = 0; j < 6; j++) {
             state[j] ^= KEY[(ROUND << 3) + j];
@@ -217,8 +249,8 @@ public class LongEncoder {
             state[j] ^= KEY[(ROUND << 3) + j];
         }
         for (int i = ROUND - 1; i >= 0; i--) {
-            inv_mix_column(state, 2);
-            inv_mix_column(state, 0);
+            inv_multiply(state, 2);
+            inv_multiply(state, 0);
             for (int j = 0; j < 6; j++) {
                 int m = ((i << 3) + j);
                 state[j] = (byte) (INV_S_BOX[state[j] & 0xFF] ^ KEY[m]);
