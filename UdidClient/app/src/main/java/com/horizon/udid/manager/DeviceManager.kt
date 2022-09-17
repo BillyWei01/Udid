@@ -27,7 +27,7 @@ object DeviceManager {
     private val JSON_TYPE = MediaType.parse("application/json")
 
     fun syncDeviceIdAsync() {
-        GlobalScope.launch(Dispatchers.IO){
+        GlobalScope.launch(Dispatchers.IO) {
             syncDeviceId()
         }
     }

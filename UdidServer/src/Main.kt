@@ -12,7 +12,7 @@ object Main {
         val address = InetSocketAddress(8080)
         val server = HttpServer.create(address, 0)
         server.createContext(UdidHandler.PATH, UdidHandler())
-        server.executor = TaskCenter.io
+        server.executor = TaskCenter.executor
         server.start()
         println("Server is listening on port: " + address.port)
     }

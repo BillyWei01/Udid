@@ -186,7 +186,7 @@ public class LongEncoder {
         state[7] = t1;
     }
 
-    public static long encode64(long value) {
+  /*  public static long encode64(long value) {
         byte[] state = long2Bytes(value);
         for (int i = 0; i < ROUND; i++) {
             for (int j = 0; j < 8; j++) {
@@ -220,6 +220,7 @@ public class LongEncoder {
         }
         return bytes2Long(state);
     }
+*/
 
     public static long encode48(long value) {
         byte[] state = long2Bytes(value);
@@ -242,9 +243,8 @@ public class LongEncoder {
         return bytes2Long(state);
     }
 
-    public static long decode48(long value) {
+/*    public static long decode48(long value) {
         byte[] state = long2Bytes(value);
-        byte[] buf = new byte[6];
         for (int j = 0; j < 6; j++) {
             state[j] ^= KEY[(ROUND << 3) + j];
         }
@@ -257,7 +257,7 @@ public class LongEncoder {
             }
         }
         return bytes2Long(state);
-    }
+    }*/
 
     public static byte[] long2Bytes(long value) {
         byte[] state = new byte[8];

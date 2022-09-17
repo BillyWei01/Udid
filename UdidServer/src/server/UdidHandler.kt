@@ -44,26 +44,28 @@ class UdidHandler : HttpHandler {
         val operation: String
         val info: DeviceIdInfo
         val udid: Long
+        val mac: Long
         try {
             val json = JSON.parseObject(request)
             val deviceIdInfo = json.getJSONObject("device_id_info")
             info = deviceIdInfo.toJavaObject(DeviceIdInfo::class.java)
+
             operation = json.getString("operation")
+
+            if (info.mac.isNullOrEmpty()
+                    && info.androidId.isNullOrEmpty()
+                    && info.serialNo == null) {
+                responseIllegal(exchange)
+                return
+            }
             udid = if (OP_UPDATE == operation) HexUtil.hex2Long(json.getString("udid")) else 0L
+            mac = HexUtil.hex2Long(StringUtil.removeChar(info.mac, ':'))
         } catch (e: Exception) {
             e.printStackTrace()
             responseIllegal(exchange)
             return
         }
 
-        if (info.mac.isNullOrEmpty()
-                && info.androidId.isNullOrEmpty()
-                && info.serialNo.isNullOrEmpty()) {
-            responseIllegal(exchange)
-            return
-        }
-
-        val mac = HexUtil.hex2Long(StringUtil.removeChar(info.mac, ':'))
         val androidId = HexUtil.hex2Long(info.androidId)
         val serialNo = MHash.hash64(info.serialNo)
 
@@ -197,7 +199,7 @@ class UdidHandler : HttpHandler {
     }
 
     private fun response(exchange: HttpExchange, statusCode: Int, json: JSONObject) {
-        TaskCenter.io.execute {
+        TaskCenter.executor.execute {
             try {
                 val responseContent = json.toString()
                 println(DateUtil.now() + " response: $responseContent")
