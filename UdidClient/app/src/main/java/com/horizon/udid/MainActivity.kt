@@ -1,23 +1,33 @@
 package com.horizon.udid
 
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothClass.Device
 import android.os.Bundle
+import com.horizon.did.DeviceId
+import com.horizon.udid.application.GlobalConfig
 import com.horizon.udid.base.BaseActivity
 import com.horizon.udid.data.AppKv
 import com.horizon.udid.event.Events
 import kotlinx.android.synthetic.main.activity_main.*
 
+/**
+ * 客户端需要先配置服务端的IP, 配置到 URLConfig.
+ */
 class MainActivity : BaseActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (AppKv.localUdid.isEmpty()) {
+            AppKv.localUdid = DeviceId.getLocalDevicesId(GlobalConfig.context)
+        }
+        local_id_tv.text = "local udid: " + AppKv.localUdid
 
-        if (AppKv.udid.isNotEmpty()) {
-            test_tv.text = "udid: " + AppKv.udid
+        if (AppKv.serverUdid.isNotEmpty()) {
+            server_id_tv.text = "server udid: " + AppKv.serverUdid
         } else {
-            test_tv.text = "loading udid..."
+            server_id_tv.text = "loading server udid..."
         }
     }
 
@@ -31,9 +41,9 @@ class MainActivity : BaseActivity() {
             Events.DEVICE_ID_SYNC_COMPLETE -> {
                 val udid = args[0] as String?
                 if (udid.isNullOrEmpty()) {
-                    test_tv.text = "get udid failed"
+                    server_id_tv.text = "get server udid failed"
                 } else {
-                    test_tv.text = "get udid: $udid"
+                    server_id_tv.text = "server udid: $udid"
                 }
             }
         }

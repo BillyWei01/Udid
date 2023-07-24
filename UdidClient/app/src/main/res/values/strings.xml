@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Udid</string>
+    <string name="local_id">local id</string>
+    <string name="server_id">server id</string>
 </resources>

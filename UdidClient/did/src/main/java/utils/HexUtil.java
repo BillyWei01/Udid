@@ -1,4 +1,4 @@
-package com.horizon.udid.util;
+package utils;
 
 public class HexUtil {
     private static final char[] HEX_DIGITS = {

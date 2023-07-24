@@ -5,10 +5,14 @@ import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
+
+import utils.HexUtil;
 import utils.MHash;
 
 import java.net.NetworkInterface;
+import java.nio.ByteBuffer;
 import java.util.Enumeration;
 
 public class DeviceId {
@@ -79,15 +83,39 @@ public class DeviceId {
         return new String(mac);
     }
 
+    private static boolean isAndroidIdValid(String androidId){
+        // 是否有其他非法的AndroidId?
+        return !TextUtils.isEmpty(androidId)
+                && !androidId.equals("9774d56d682e549c")
+                && !androidId.equals("0000000000000000")
+                && !androidId.equals("0123456789abcdef");
+    }
+
     public static String getAndroidID(Context context) {
         if (context != null) {
-            @SuppressLint("HardwareIds")
-            String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-            if (!TextUtils.isEmpty(androidId) && !INVALID_ANDROID_ID.equals(androidId)) {
-                return androidId;
+            try {
+                @SuppressLint("HardwareIds")
+                String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                if (isAndroidIdValid(androidId)) {
+                    return androidId;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return "";
+    }
+
+    private static long getLongAndroidId(Context context){
+        String androidId = getAndroidID(context);
+        if(androidId.length() == 16){
+            try{
+                return HexUtil.hex2Long(androidId);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return MHash.hash64(androidId);
     }
 
     public static String getSerialNo() {
@@ -101,4 +129,11 @@ public class DeviceId {
         return serialNo;
     }
 
+    public static String getLocalDevicesId(Context context) {
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+        buffer.putLong(getLongAndroidId(context));
+        buffer.putLong(PhysicsInfo.getDeviceHash(context));
+        return Base64.encodeToString(buffer.array(), Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+       // return HexUtil.bytes2Hex(buffer.array());
+    }
 }

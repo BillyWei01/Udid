@@ -1,12 +1,13 @@
 package utils;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class AutoExtendByteBuffer {
     private ByteBuffer mBuffer;
 
     public AutoExtendByteBuffer(int initSize) {
-        mBuffer = ByteBuffer.allocate(initSize > 16 ? initSize : 16);
+        mBuffer = ByteBuffer.allocate(Math.max(initSize, 16));
     }
 
     private void ensureSize(int allocate) {
@@ -27,33 +28,46 @@ public class AutoExtendByteBuffer {
         mBuffer = newBuffer;
     }
 
-    public void putInt(int value) {
+    public AutoExtendByteBuffer put(byte value) {
+        ensureSize(1);
+        mBuffer.put(value);
+        return this;
+    }
+
+    public AutoExtendByteBuffer putInt(int value) {
         ensureSize(4);
         mBuffer.putInt(value);
+        return this;
     }
 
-    public void putFloat(float value) {
+    public AutoExtendByteBuffer putFloat(float value) {
         ensureSize(4);
         mBuffer.putFloat(value);
+        return this;
     }
 
-    public void putString(String value) {
-        if (value == null || value.isEmpty()) {
-            return;
+    public AutoExtendByteBuffer putLong(long value) {
+        ensureSize(8);
+        mBuffer.putLong(value);
+        return this;
+    }
+
+    public AutoExtendByteBuffer putString(String value) {
+        if (value != null && !value.isEmpty()) {
+            byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+            ensureSize(bytes.length);
+            mBuffer.put(bytes);
         }
-        byte[] bytes = value.getBytes();
-        ensureSize(bytes.length);
-        mBuffer.put(bytes);
+        return this;
     }
 
-    public final byte[] array(){
-        return mBuffer.array();
-    }
-
-    public final int position(){
-        return mBuffer.position();
-    }
-
+//    public final byte[] array(){
+//        return mBuffer.array();
+//    }
+//
+//    public final int position(){
+//        return mBuffer.position();
+//    }
 
 
     public long getLongHash() {
