@@ -56,8 +56,8 @@ public class PhysicsInfo {
     private static void putBasicDeviceInfo(Context context, AutoExtendByteBuffer buffer) {
         buffer.putString(Build.MODEL).put(SEPARATOR)
                 .putInt(getCPUCores()).put(SEPARATOR)
-                .putLong(getMinCpuFreq()).put(SEPARATOR)
-                .putLong(getMaxCpuFreq()).put(SEPARATOR)
+                .putString(getScalingAvailableFrequencies())
+                //.putString(getScalingAvailableGovernors())
                 .putInt(getRamSize(context)).put(SEPARATOR)
                 .putInt(getRomSize()).put(SEPARATOR)
                 .putString(getWindowInfo(context));
@@ -92,29 +92,40 @@ public class PhysicsInfo {
         return false;
     };
 
-    private static long getMinCpuFreq() {
-        return getCpuFreq("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq");
+    // 不同的cpu policy， cpu最大最小频率不同
+//    private static String getMinCpuFreq() {
+//        return getCpuInfo("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq");
+//    }
+//
+//    private static String getMaxCpuFreq() {
+//        return getCpuInfo("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq");
+//    }
+
+    // 可用频率表，这个应该相对固定了吧
+    private static String getScalingAvailableFrequencies() {
+        return getCpuInfo("scaling_available_frequencies");
     }
 
-    private static long getMaxCpuFreq() {
-        return getCpuFreq("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq");
-    }
+//    private static String getScalingAvailableGovernors() {
+//        return getCpuInfo("scaling_available_governors");
+//    }
 
-    private static long getCpuFreq(String pathname) {
+    private static String getCpuInfo(String name) {
         FileInputStream in = null;
         try {
-            File file = new File(pathname);
+            String path = "/sys/devices/system/cpu/cpu0/cpufreq/";
+            File file = new File(path + name);
             if (file.canRead()) {
                 in = new FileInputStream(file);
                 Scanner sc = new Scanner(in);
-                return sc.nextLong();
+                return sc.nextLine();
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         } finally {
             closeQuietly(in);
         }
-        return 0;
+        return "";
     }
 
     static void closeQuietly(Closeable closeable) {
@@ -216,7 +227,7 @@ public class PhysicsInfo {
                             .putString(sensor.getVendor()).put(SEPARATOR)
                             // .putInt(sensor.getVersion()).put(SEPARATOR)
                             .putInt(sensor.getType()).put(SEPARATOR)
-                            .putFloat(sensor.getMaximumRange()).put(SEPARATOR)
+                            //.putFloat(sensor.getMaximumRange()).put(SEPARATOR)
                             .putFloat(sensor.getResolution()).put(SEPARATOR);
                             // .putFloat(sensor.getPower()).put(SEPARATOR)
                             //.putInt(sensor.getMinDelay()).put(SEPARATOR);
