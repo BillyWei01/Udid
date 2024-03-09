@@ -8,6 +8,7 @@ import com.horizon.udid.application.GlobalConfig
 import com.horizon.udid.base.BaseActivity
 import com.horizon.udid.data.AppKv
 import com.horizon.udid.event.Events
+import com.horizon.udid.manager.DeviceManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -27,6 +28,9 @@ class MainActivity : BaseActivity() {
         if (AppKv.serverUdid.isNotEmpty()) {
             server_id_tv.text = "server udid: " + AppKv.serverUdid
         } else {
+            if (!DeviceManager.isSyncing.get()) {
+                DeviceManager.syncDeviceIdAsync()
+            }
             server_id_tv.text = "loading server udid..."
         }
     }

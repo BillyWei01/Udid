@@ -18,6 +18,7 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicBoolean
 
 object DeviceManager {
     private const val TAG = "DeviceManager"
@@ -26,9 +27,17 @@ object DeviceManager {
 
     private val JSON_TYPE = MediaType.parse("application/json")
 
+    val isSyncing = AtomicBoolean()
+
     fun syncDeviceIdAsync() {
         CoroutineScope(Dispatchers.IO).launch {
-            syncDeviceId()
+            if (isSyncing.compareAndSet(false, true)) {
+                try {
+                    syncDeviceId()
+                } finally {
+                    isSyncing.set(false)
+                }
+            }
         }
     }
 
@@ -94,11 +103,10 @@ object DeviceManager {
         val context = GlobalConfig.context
         val requestJson = JSONObject()
         val deviceIdInfo = JSONObject().apply {
-            put("mac", DeviceId.getMacAddress())
             put("android_id", DeviceId.getAndroidID(context))
-            put("serial_no", DeviceId.getSerialNo())
-            put("physics_info", HexUtil.long2Hex(PhysicsInfo.getBasicHash(context)))
-            put("dark_physics_info", HexUtil.long2Hex(PhysicsInfo.getDarkHash(context)))
+            put("widevine_id", HexUtil.long2Hex(DeviceId.getWidevineIdHash()))
+            put("device_hash", HexUtil.long2Hex(PhysicsInfo.getDeviceHash(context)))
+            put("local_did", DeviceId.getLocalDevicesId(GlobalConfig.context))
         }
         requestJson.put("operation", operation)
         requestJson.put("device_id_info", deviceIdInfo)
