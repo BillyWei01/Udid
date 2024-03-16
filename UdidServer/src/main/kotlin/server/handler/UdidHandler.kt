@@ -1,14 +1,14 @@
-package server
+package server.handler
 
 import com.alibaba.fastjson2.JSON
 import com.alibaba.fastjson2.JSONObject
-import horizon.task.TaskCenter
-import horizon.util.*
+import tools.task.TaskCenter
+import tools.util.*
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
-import db.IdGenerator
-import db.UdidDao
-import db.bean.DeviceId
+import server.db.IdGenerator
+import server.db.UdidDao
+import server.db.bean.DeviceId
 import server.vo.DeviceIdInfo
 import server.vo.DidRequest
 import java.io.IOException
@@ -79,10 +79,11 @@ class UdidHandler : HttpHandler {
                     val didFormDb = matchDeviceId(deviceIdList, didFromReq)
                     if (didFormDb != null) {
                         updateDeviceId(didFormDb, didFromReq)
+                        responseQuery(exchange, didFormDb.udid)
                     } else {
                         insertDeviceId(didFromReq)
+                        responseQuery(exchange, didFromReq.udid)
                     }
-                    responseQuery(exchange, didFromReq.udid)
                 }
 
                 OP_UPDATE -> {

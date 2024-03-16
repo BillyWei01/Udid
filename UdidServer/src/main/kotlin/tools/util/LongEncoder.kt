@@ -1,4 +1,4 @@
-package horizon.util
+package tools.util
 
 /**
  * 基本思路和 AES 相似，包含混淆层，扩散层，和轮加密。

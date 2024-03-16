@@ -1,4 +1,4 @@
-package config
+package server.config
 
 import com.alibaba.fastjson2.annotation.JSONField
 

@@ -1,7 +1,7 @@
-package db
+package server.db
 
-import horizon.helper.SQLiteOpenHelper
-import horizon.util.IOUtil
+import tools.helper.SQLiteOpenHelper
+import tools.util.IOUtil
 import java.io.BufferedInputStream
 import java.io.FileInputStream
 import java.sql.Statement

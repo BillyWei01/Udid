@@ -1,7 +1,7 @@
 import com.sun.net.httpserver.HttpServer
-import config.ConfigManager
-import horizon.task.TaskCenter
-import server.UdidHandler
+import server.config.ConfigManager
+import tools.task.TaskCenter
+import server.handler.UdidHandler
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
 import java.net.SocketException

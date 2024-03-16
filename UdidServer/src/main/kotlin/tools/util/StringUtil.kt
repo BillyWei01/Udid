@@ -1,4 +1,4 @@
-package horizon.util
+package tools.util
 
 object StringUtil {
     fun removeChar(src: String?, ch: Char): String? {

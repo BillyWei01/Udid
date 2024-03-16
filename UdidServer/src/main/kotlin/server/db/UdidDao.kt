@@ -1,8 +1,8 @@
-package db
+package server.db
 
-import horizon.helper.DbHelper
+import tools.helper.DbHelper
 
-import db.bean.DeviceId
+import server.db.bean.DeviceId
 import java.sql.ResultSet
 
 object UdidDao {

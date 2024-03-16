@@ -1,6 +1,6 @@
-package db
+package server.db
 
-import config.ConfigManager
+import server.config.ConfigManager
 import java.util.concurrent.atomic.AtomicLong
 
 /**

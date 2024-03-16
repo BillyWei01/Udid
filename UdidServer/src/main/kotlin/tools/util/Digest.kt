@@ -1,4 +1,4 @@
-package horizon.util
+package tools.util
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException

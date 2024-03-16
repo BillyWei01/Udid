@@ -1,7 +1,7 @@
-package horizon.helper
+package tools.helper
 
-import horizon.helper.DbHelper.closeQuietly
-import horizon.util.IOUtil.makeFileIfNotExist
+import tools.helper.DbHelper.closeQuietly
+import tools.util.IOUtil.makeFileIfNotExist
 import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
